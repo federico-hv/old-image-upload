@@ -1,0 +1,58 @@
+
+
+- Validar la fecha nuevamente. Revisar que se pueda mandar como cadena normal tb para poder enviarlo desde safari. Además debe ser una fecha en un rango determinado.
+
+
+DEBE HACERSE UN DATEPICKER CON ANGULAR PARA QUE SEA CROSSBROWSER!!!!
+
+*ESTA MUY LARGO EL CÓDIGO PARA EL DATEPICKER :(
+
+
+(angular no javascript)
+
+- Geolocalización. Debe ser buena y no tener problemas en los mapas
+
+- Carga de gráficos
+
+
+
+GRAFICOS
+
+Cuantas personas fuman?
+Que porcentaje es mujer? hombre?
+Que porcentaje es menor de edad?
+Que ocupación tiene el mayor porcentaje de fumadores?
+
+
+
+*Los sexos, ocupaciones, estado civil, fumador PODRÍAN SER CONSUMIDOS DESDE LA BASE DE DATOS
+
+
+
+
+
+
+
+
+
+
+
+
+*Aplicación móvil con Titanium(Android y IOS). 
+
+
+- Falta hacer registro de cuenta, agregar validaciones, hacer envío de audio y agregar opciones de revisión o envío de datos(el reporte móvil puede aplazarse).
+
+
+
+VALIDAR LAS ENTRADAS DE MAYÚSCULAS (DEJAR TODO EN MINUSCULA OBLIGATORIA!!!!!!!!
+
+
+
+
+
+
+
+
+
+

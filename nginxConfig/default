@@ -1,0 +1,43 @@
+
+
+user root root;
+
+events {
+    worker_connections  1024;
+}
+
+http{
+
+  types {
+    application/javascript js;
+    text/css css;
+  }
+  
+  proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=one:8m max_size=3000m inactive=600m;
+  proxy_temp_path /var/tmp;
+
+  server {  
+    server_name localhost;
+    listen 80;
+    root /opt/nodeapps/serverProduction/serverdemo/serverDemo/public/;
+    
+
+    location / {
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_set_header X-NginX-Proxy true;
+      proxy_http_version 1.1;
+      proxy_cache one;
+      proxy_cache_key sfs$request_uri$scheme;
+      proxy_pass http://127.0.0.1:3000;
+      proxy_redirect off;
+    }
+
+    location ~ ^/(img/|javascripts/|compressedImages/|js/|css/|stylesheets/|flash/|media/|static/|robots.txt|humans.txt|favicon.ico) {
+        access_log off;
+        expires max;
+    }
+
+  }
+}

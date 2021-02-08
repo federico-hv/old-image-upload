@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= message
+  h2= error.status
+  pre #{error.stack}
+  br
+  h1
+     a(href="#{error.link}" style="text-decoration:none;") Go to login page

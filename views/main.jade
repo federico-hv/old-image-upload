@@ -1,0 +1,290 @@
+extends layout
+
+block content
+    link(rel='stylesheet', href='http://approveitbucket.s3.amazonaws.com/approveit/public/stylesheets/styles.min.css')
+    script(type="text/javascript",src='https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false')
+    script(type="text/javascript",src='https://www.google.com/jsapi')
+    script(type="text/javascript",src='http://approveitbucket.s3.amazonaws.com/approveit/public/javascripts/tools.min.js')
+    script(type="text/javascript",src='/socket.io/socket.io.js')
+    div(ng-app="prueba",ng-controller="controladorUno" ng-cloak)
+       input(type="hidden",ng-init="key = '#{key}'")
+       div(id="marcoMenu",ng-class="seeMenu")  
+        div(id="menu",class="inline",ng-class="seeMenu") 
+          ul
+            li 
+              a(href="",ng-click="showList()") Records 
+            li
+              a(href="",ng-click="showNewRecordForm()") Forms
+            li  
+              a(href="",ng-click="showCharts()") Charts
+            li
+              a(href="",ng-click="workInProgress()") Chat
+            li
+              a(href="",ng-click="logout()") Log out
+        div(id="filters",class="inline filter",ng-class="seePeople")
+          label(class="topper") Order by:
+          br                    
+          select(ng-model="orderFilter",class="topper",ng-init="orderFilter = order[0]",ng-options="o for o in order")
+          br
+          br
+          label(id="filterBy",class="topper") Filter:
+          input(id="inputFilter",class="topper",type="text",ng-model="inputFilter",maxlength="30")
+          br
+        a(id="infoLink",ng-click="showInfo()",ng-show="goMain") Main
+       br
+       br
+       br
+       table(id="newRecordFormUno",border='2',class='table',ng-class="newRecordTable")
+            tr 
+               th Firstname 
+               td(class="vert-align"): input(type="text",ng-model="newRecord.firstname",ng-change="onlyLowerCase(newRecord,'firstname')",placeholder="Firstname",required)
+            tr
+               th Lastname
+               td(class="vert-align"): input(type="text",ng-model="newRecord.lastname",ng-change="onlyLowerCase(newRecord,'lastname')",placeholder="Lastname",required)
+            tr
+               th Id (Chilean)
+               td(class="vert-align"): input(type="text",ng-model="newRecord.chileanId",ng-keydown="capturaKey($event,newRecord)",placeholder="x.xxx.xxx-x",required)
+            tr
+               th Birthdate
+               td(class="vert-align"): input(type="date",id="inputFechaNac",ng-model="newRecord.birthDate",max="today",ng-pattern="datePattern",placeholder="yyyy-mm-dd",ng-change="calculateAge(newRecord)",required)
+            tr
+               th Age
+               td(class="vert-align"): input(type="text",ng-model="newRecord.age",disabled="disabled",required)
+            tr
+               th Occupation
+               td(class="vert-align"): select(id="occupationSelect",ng-model="newRecord.occupation",ng-options="o for o in occupations",placeholder="Occupation",required)
+            tr  
+               th Email
+               td(class="vert-align"): input(type="text",ng-model="newRecord.email",ng-change="onlyLowerCase(newRecord,'email')",placeholder="Email",ng-pattern="emailPattern",required)
+            tr   
+               th Gender
+               td(class="vert-align"): select(ng-model="newRecord.gender",ng-options="g for g in gender")
+            tr   
+               th Address
+               td(class="vert-align"): input(type="text",maxlength="40",ng-model="newRecord.address",ng-change="onlyLowerCase(newRecord,'address')",placeholder="Address",required)
+            tr   
+               th Telephone          
+               td(class="vert-align"): input(type="text",ng-model="newRecord.telephone",placeholder="+569xxxxxxxx",ng-pattern="telephonePattern",required)
+            tr  
+               th Marital Status 
+               td(class="vert-align"): select(ng-model="newRecord.maritalStatus",ng-options="m for m in maritalStatuses")
+            tr  
+               th Smoker
+               td(class="vert-align"): input(type="checkbox",class="checkFumador",ng-model="newRecord.smoker",placeholder="Smoker",required)
+            tr  
+               th Picture 
+               td(class="vert-align"): input(type="file",id="imagen",file-model="newRecord.image",accept="image/*",required)
+            tr(style="background-color:#E6F8E0")          
+               td(colspan="2")
+                button(class="glyphicon glyphicon-plus btn btn-success",ng-click="addRecord()",style="width:150px")
+       br
+       label(id="listarPersonasLabel",ng-class="seePeople") *Click thumbnail to see image in detail
+       table(id="listarPersonas",name="listaPersonas",border='2',class='table table-striped table-hover',ng-class="seePeople")
+            thead
+               tr(style="background-color:#E6F8E0")
+                 th Firstname 
+                 th Lastname
+                 th Id (Chilean)
+                 th Birthdate
+                 th Age
+                 th Occupation
+                 th Email
+                 th Gender
+                 th Address
+                 th Telephone
+                 th Marital Status
+                 th Smoker
+                 th Picture
+                  //th Audio 
+                 th Location
+                 th Modify
+                 th Delete     
+            tbody
+               tr(ng-repeat="x in people | orderBy: orderFilter | filter: inputFilter")
+                 td(class="vert-align") {{x.firstname}}
+                 td(class="vert-align") {{x.lastname}}
+                 td(class="vert-align") {{x.chileanId}}
+                 td(class="vert-align") {{x.birthDate}}
+                 td(class="vert-align") {{x.age}}
+                 td(class="vert-align") {{x.occupation}}
+                 td(class="vert-align") {{x.email}}
+                 td(class="vert-align") {{x.gender}}
+                 td(class="vert-align") {{x.address}}
+                 td(class="vert-align") {{x.telephone}}
+                 td(class="vert-align") {{x.maritalStatus}}
+                 td(class="vert-align") {{x.smoker}}
+                 td(class="vert-align") 
+                  a(href="" ng-click="seePicture(x)") 
+                   img(ng-src="{{x.image}}")
+                  //td(class="vert-align")
+                    audio(id="{{x._id}}",onplay="audioFun()" controls loop)
+                        source(src="/audio/theSkins.mp3")
+                        |este navegador no soporta audio 
+                 td(class="vert-align")
+                  button(class="btn btn-default",ng-click="showMap(x)")
+                    i(class="glyphicon glyphicon-map-marker")
+                 td(class="vert-align"): button(class="btn btn-default",ng-click="modifyRecord(x)"): span(class="glyphicon glyphicon-pencil")
+                 td(class="vert-align"): button(class="btn btn-default",ng-click="deleteRecord(x)"): span(class="glyphicon glyphicon-trash") 
+        label(id="updaterLabel",ng-class="updatePerson") Record Updating
+         hr(ng-class="updatePerson") 
+        table(id="modPersonasUno",name="modPersonas",border='2',class='table',ng-class="updatePerson")
+               tr 
+                 th(class="vert-align") Firstname
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.firstname",placeholder="firstname",required)
+               tr
+                 th(class="vert-align") Lastname
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.lastname",placeholder="lastname",required)
+               tr
+                 th(class="vert-align") Id (Chilean)
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.chileanId",ng-keydown="capturaKey($event,persona)",placeholder="x.xxx.xxx-x",required)
+               tr 
+                 th(class="vert-align") Birthdate
+                 td(class="vert-align")
+                   input(type="date",ng-model="persona.birthDate",ng-pattern="datePattern",ng-change="calculateAge(persona)",placeholder="yyyy-mm-dd",required)
+               tr
+                 th(class="vert-align") Age
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.age",disabled="disabled",placeholder="Age",required)
+               tr
+                 th(class="vert-align") Occupation
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.occupation",placeholder="Occupation",required)
+               tr  
+                 th(class="vert-align") Email
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.email",placeholder="Email",ng-pattern="emailPattern",required)
+               tr 
+                 th(class="vert-align") Gender
+                 td(class="vert-align")
+                   select(ng-model="persona.gender",ng-init="persona.gender = gender[0]",ng-options="g for g in gender",required)
+        table(id="modPersonasDos",name="modPersonas",border='2',class='table',ng-class="updatePerson")     
+               tr
+                 th(class="vert-align") Address
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.address",maxlength="40",placeholder="Address",required)
+               tr
+                 th(class="vert-align") Telephone
+                 td(class="vert-align")
+                   input(type="text",ng-model="persona.telephone",placeholder="+569xxxxxxxx",ng-pattern="telephonePattern",required)
+               tr
+                 th(class="vert-align") Marital Status  
+                 td(class="vert-align")
+                   select(ng-model="persona.maritalStatus",ng-init="persona.maritalStatus = maritalStatuses[0]",ng-options="m for m in maritalStatuses")
+               tr
+                 th(class="vert-align") Smoker  
+                 td(class="vert-align")
+                   input(class="checkFumador",type="checkbox",ng-model="persona.smoker")
+               tr 
+                 th(class="vert-align") Picture
+                 td(class="vert-align")
+                  a(href="",ng-click="")
+                   img(id="updateImagen",ng-src="{{persona.image}}")
+                 //th Audio 
+                 //td(class="vert-align")
+                   //audio(src="/audio/theSkins.mp3" controls loop)
+               tr  
+                th(class="vert-align") Accept
+                td(class="vert-align"): button(class="btn btn-default",ng-click="updateRecord()"): span(class="glyphicon glyphicon-ok")
+               tr
+                 th(class="vert-align") Cancel  
+                 td(class="vert-align"): button(class="btn btn-default",ng-click="cancelUpdateRecord()"): span(class="glyphicon glyphicon-remove")          
+        div(id="vistaFoto", ng-class="seeImage")
+          label(class="portraitLabel",ng-show="seeImage") {{portrait}} 
+            br
+            a(ng-click="showList()")  
+                img(id="foto",ng-src="{{bigImage}}",ng-style="imageDetailStyle")
+                br
+            label(class="closer") *click image to go back
+
+        div(id="vistaMapa",ng-class="seeMap")
+          label(class="portraitLabel",style="font-size:300%",ng-class="seeMap") Location of survey 
+          a(ng-click="hideMap();showList()",class="closer")
+            i(class="glyphicon glyphicon-remove-circle",ng-class="seeMap")
+          div(id="mapa",ng-class="seeMap")
+        div(id="vistaGraficos")
+            div(id="graficoUno",ng-class="seeCharts")
+            div(id="graficoDos",ng-class="seeCharts")
+            div(id="graficoTres",ng-class="seeCharts")
+        div(id="divLoader",ng-show="showLoader")
+           img(id="loader", src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/ajax_loader.gif",ng-show="showLoader")
+        div(id="infoDiv",ng-class="seeInfo")
+          h1 Welcome to Approveit.
+          br  
+          strong This site is only a prototype, therefore it might be buggy. It is intended to help analizing surveys data in real time. It works along with a mobile app made for Android and IOS that lets you register data being anywhere. You can download from the following links:
+          br
+          br
+          br
+          a(href="",target="_blank",class="appLink",ng-click="workInProgress()")
+           img(src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/androidIcon.jpg",class="appIcon")
+          | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          a(href="",target="_blank",class="appLink",ng-click="workInProgress()")
+           img(src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/iosIcon.jpg",class="appIcon")
+          br
+          br
+          br
+          h1 Sections
+          br
+          br
+          br
+          h2 Records
+          br
+          strong This section consists of tables with all the records from the surveys(currently the survey is a default one). The idea later is that the user is able to switch between the different surveys that have been or are being made. 
+          br
+          br
+          br
+          p - Scroll horizontally to see the thumbnails and more options. 
+          p - Click on a thumbnail to see the picture of a person in detail.
+          p - There you can also see the map from where a survey was made, update records and delete them.
+          p - You can order the results by the field you want using the select input in the main menu.
+          p - You can also filter the results using a specific string so as to find quickly the record you need.
+          br
+          br
+          h2 Forms
+          br
+          strong Currently there's only one form. The idea later is to include forms from different surveys in this section, so that the survey taker can choose which form to fill in.
+          br
+          br
+          br
+          p - Fill in the form and send it. A record has been added and it is appended to the table in the records section.
+          br
+          br
+          h2 Charts
+          br
+          strong This section shows some charts that are drawn with the data from the records. As this site uses socket.io, the charts are reloaded each time a record is added(give it a try with the mobile app).
+          br
+          br
+          br
+          p - Scroll down and see the different types of charts drawn with the data from the surveys(currently only pie charts). 
+          p - Later the user will be able to select the survey from where the charts are going to be fed.
+          br
+          br
+          h2 Chat
+          br
+          strong This section is still under development. The idea is that all the users of the platform can communitate directly through it without having to use external systems for that matter.
+          br
+          br
+          br
+          br
+          br
+          br
+          br
+          br
+
+
+
+
+
+
+
+
+              
+               
+
+
+                 
+
+
+             

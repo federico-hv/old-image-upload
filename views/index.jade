@@ -1,0 +1,25 @@
+extends layout
+
+block content
+	script(type="text/javascript",src="http://approveitbucket.s3.amazonaws.com/approveit/public/javascripts/index.min.js")
+	link(rel='stylesheet',type='text/css',href='http://approveitbucket.s3.amazonaws.com/approveit/public/stylesheets/index.min.css')
+	div(id="control",ng-app="index",ng-controller="indexControl" ng-cloak)
+		div(id="vistaFormUno")
+			form(method="post",action="/open",class="form-signin",role="form")
+				label(id="title") Approve it!
+				img(id="logo",src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/positive.png")
+				br
+				input(type="hidden",name="checks",value="#{checks}",ng-init="checks = '#{checks}'; keyUno = '#{keyUno}'")
+				input(type="text",class="form-control",placeholder="email",ng-pattern="patronEmail",ng-model="user.email",name="email" required)
+				input(type="password",class="form-control",placeholder="password",ng-model="user.password",name="password",maxlength="12" required)
+				br
+				br
+				input(type="submit",value="Log in",class="btn btn-lg btn-primary btn-block",ng-click="validar($event)")
+				br
+				label(id="error",class="text-center",ng-class="showError") Email or password are invalid, please try again.
+				h4
+					a(href="http://approveit.biz/accountRecovery",class="link",id="recuperador",ng-click="recuperar()") Reset Password
+			div(id="divLoader",ng-show="showLoader")
+				img(id="loader", src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/ajax_loader.gif",ng-show="showLoader")
+		
+

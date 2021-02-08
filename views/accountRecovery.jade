@@ -1,0 +1,15 @@
+extends layout
+
+block content
+	link(rel='stylesheet',type='text/css',href='http://approveitbucket.s3.amazonaws.com/approveit/public/stylesheets/index.min.css')
+	script(type="text/javascript",src="http://approveitbucket.s3.amazonaws.com/approveit/public/javascripts/accountRecovery.min.js")
+	div(id="vistaFormDos",ng-app="accountRecovery",ng-controller="accountRecoveryControl" ng-cloak)
+			label(id="indicacionRecup") Type in your email and we will send you a link to reset your password
+			form(method="",action="",class="form-signin",role="form")
+				input(type="email",id="email",ng-model="form.email",name="email",placeholder="email",class="form-control")
+				br
+				input(type="submit",ng-click="validar($event)",value="Reset Password",class="btn btn-lg btn-primary btn-block")
+			h3 
+				a(class="link",href="http://approveit.biz") Go back
+			div(id="divLoader",ng-show="showLoader")
+				img(id="loader", src="http://approveitbucket.s3.amazonaws.com/approveit/public/compressedImages/ajax_loader.gif",ng-show="showLoader")

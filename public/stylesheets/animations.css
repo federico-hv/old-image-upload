@@ -1,0 +1,44 @@
+
+
+/** Esta clase se le aplica a los elementos que se están mostrando y tendrán transiciones a ocultos **/
+
+.ocultar{
+	display:table;
+	opacity:3;
+	-webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+
+.ocultar.ocultar-active {
+	opacity:0;
+}
+
+
+.ocultar.ocultar-active.remover {
+	display:none;
+}
+
+
+
+
+
+
+/** Esta clase se le aplica a los elementos que están ocultos y tendrán transiciones a visibles **/
+
+.mostrar{
+	display:none;
+	opacity:0;
+	-webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+
+.mostrar.mostrar-active {
+	opacity:3;
+}
+
+
+.mostrar.mostrar-active.reponer {
+	display:table;
+}
+
+

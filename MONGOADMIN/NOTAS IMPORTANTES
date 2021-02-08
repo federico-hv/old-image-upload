@@ -1,0 +1,29 @@
+
+
+*La base de datos se llama prueba80 y está sin autenticación
+
+*Está configurada para correr en el puerto 28017
+
+*Las colecciones actuales son:
+
+
+- personas (colección con los datos recolectados)
+
+- users (colección con los datos de los usuarios de la aplicación)
+
+- attempts (colección que debe contener documentos temporales para bloquear intentos de conexión muchas veces).
+
+- Llaves (esta colección también tendrá documentos temporales con hashes al azar que se envían a cliente mediante un input hidden)
+
+
+
+//Deben correrse los siguientes comandos en la base de datos ya que debo tener en cuenta la expiración
+
+
+
+PARA LA COLECCIÓN ATTEMPTS BASTA CON CREAR UN INDICE QUE EXPIRE DESPUÉS DE 300 SEGUNDOS(5 Min)
+
+db.attempts.ensureIndex({fecha:1,{expireAfterSeconds:240});
+
+
+PARA LA COLECCIÓN KEYS DEBE HACERSE UN 
